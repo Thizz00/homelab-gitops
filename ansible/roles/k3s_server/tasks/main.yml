@@ -1,0 +1,35 @@
+---
+- name: Install K3s server (control-plane)
+  ansible.builtin.shell: |
+    curl -sfL https://get.k3s.io | \
+    INSTALL_K3S_VERSION="{{ k3s_version }}" \
+    INSTALL_K3S_EXEC="server \
+      --disable traefik \
+      --disable servicelb \
+      --write-kubeconfig-mode 644 \
+      --node-ip {{ ansible_host }} \
+      --tls-san {{ ansible_host }} \
+      --tls-san {{ kube_vip_address }}" \
+    sh -
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Ensure k3s service is started and enabled
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+    enabled: true
+
+- name: Wait for node-token to be generated
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    timeout: 120
+
+- name: Read node-token
+  ansible.builtin.slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: _k3s_token
+
+- name: Publish token as a host fact (used by workers)
+  ansible.builtin.set_fact:
+    k3s_token: "{{ _k3s_token.content | b64decode | trim }}"

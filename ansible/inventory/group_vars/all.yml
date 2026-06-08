@@ -1,0 +1,13 @@
+---
+timezone: "Europe/Warsaw"
+common_packages:
+  - curl
+  - vim
+  - htop
+  - ca-certificates
+  - apt-transport-https
+  - gnupg
+
+# --- K3s ---
+k3s_version: "v1.34.8+k3s1"
+kube_vip_address: "192.168.4.200"

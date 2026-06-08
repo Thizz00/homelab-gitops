@@ -1,0 +1,9 @@
+---
+timezone: "Europe/Warsaw"
+common_packages:
+  - curl
+  - vim
+  - htop
+  - ca-certificates
+  - apt-transport-https
+  - gnupg

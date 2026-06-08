@@ -1,0 +1,37 @@
+---
+- name: Install K3s control-plane
+  hosts: masters
+  become: true
+  roles:
+    - k3s_server
+
+- name: Install K3s workers
+  hosts: workers
+  become: true
+  roles:
+    - k3s_agent
+
+- name: Fetch kubeconfig to control node
+  hosts: masters
+  become: true
+  tasks:
+    - name: Slurp kubeconfig from master
+      ansible.builtin.slurp:
+        src: /etc/rancher/k3s/k3s.yaml
+      register: _kubeconfig
+
+    - name: Ensure ~/.kube exists on control node
+      ansible.builtin.file:
+        path: "{{ lookup('env', 'HOME') }}/.kube"
+        state: directory
+        mode: "0700"
+      delegate_to: localhost
+      become: false
+
+    - name: Write kubeconfig locally
+      ansible.builtin.copy:
+        content: "{{ _kubeconfig.content | b64decode | replace('127.0.0.1', ansible_host) }}"
+        dest: "{{ lookup('env', 'HOME') }}/.kube/config-homelab"
+        mode: "0600"
+      delegate_to: localhost
+      become: false
