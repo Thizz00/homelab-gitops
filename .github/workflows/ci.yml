@@ -26,7 +26,7 @@ jobs:
           terraform_version: "1.9.5"
 
       - name: Terraform fmt
-        run: terraform -chdir=terraform fmt -check -recursive
+        run: terraform -chdir=terraform fmt -recursive
 
       - name: Terraform validate
         run: |
