@@ -1,0 +1,6 @@
+---
+- name: Bootstrap ArgoCD (GitOps engine)
+  hosts: masters
+  become: true
+  roles:
+    - argocd

@@ -1,0 +1,19 @@
+---
+- name: Create argocd namespace
+  ansible.builtin.command: k3s kubectl create namespace argocd
+  register: _ns
+  changed_when: "'created' in _ns.stdout"
+  failed_when: _ns.rc != 0 and 'AlreadyExists' not in _ns.stderr
+
+- name: Install ArgoCD (server-side apply, pinned version)
+  ansible.builtin.command: >
+    k3s kubectl apply -n argocd --server-side --force-conflicts
+    -f https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml
+  register: _argocd_apply
+  changed_when: "'configured' in _argocd_apply.stdout or 'created' in _argocd_apply.stdout"
+
+- name: Wait for ArgoCD server to become available
+  ansible.builtin.command: >
+    k3s kubectl -n argocd wait --for=condition=Available
+    deployment/argocd-server --timeout=300s
+  changed_when: false
