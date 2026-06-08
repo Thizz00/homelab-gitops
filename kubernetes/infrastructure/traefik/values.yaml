@@ -1,10 +1,9 @@
-# Traefik v3 — wartosci dopasowane do homelaba 16 GB RAM
+# Traefik v3 (chart v40) — wartosci pod homelab 16 GB RAM
 deployment:
   replicas: 1
 
 service:
   type: LoadBalancer
-  # Prosimy Kube-VIP o konkretny IP z puli (zarezerwowany .200)
   annotations:
     kube-vip.io/loadbalancerIPs: "192.168.4.200"
 
@@ -19,15 +18,11 @@ ports:
     expose:
       default: true
     exposedPort: 443
-    tls:
-      enabled: true
 
-# Dashboard Traefika (przyda sie do podgladu routingu)
 ingressRoute:
   dashboard:
     enabled: true
 
-# Oszczednosc RAM — niskie requesty, rozsadne limity
 resources:
   requests:
     cpu: 50m
