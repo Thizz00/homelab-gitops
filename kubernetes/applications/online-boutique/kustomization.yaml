@@ -7,10 +7,8 @@ resources:
   - https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/v0/release/kubernetes-manifests.yaml
   - ingressroute.yaml
 
-# Obniza resource requests na WSZYSTKICH Deploymentach (gestosc pod 16 GB RAM).
-# Jeden patch JSON6902 z target.kind=Deployment trafia w kazdy serwis naraz,
-# bo kazdy ma dokladnie jeden kontener (index 0).
 patches:
+  # Obniza resource requests na wszystkich Deploymentach (gestosc pod 16 GB RAM)
   - target:
       kind: Deployment
     patch: |
@@ -23,3 +21,13 @@ patches:
           limits:
             cpu: "1"
             memory: 512Mi
+  # Usuwa frontend-external (LoadBalancer) — wejscie idzie przez Traefik
+  - target:
+      kind: Service
+      name: frontend-external
+    patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: frontend-external
