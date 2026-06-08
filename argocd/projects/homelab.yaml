@@ -8,6 +8,8 @@ spec:
   sourceRepos:
     - https://github.com/Thizz00/homelab-gitops.git
     - https://traefik.github.io/charts
+    - https://helm.releases.hashicorp.com
+    - https://charts.external-secrets.io
   destinations:
     - server: https://kubernetes.default.svc
       namespace: '*'

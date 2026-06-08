@@ -15,3 +15,7 @@ kubeconfig*
 
 *.retry
 ansible/kubectl
+
+# Vault secrets
+vault-init.json
+vault-keys*
